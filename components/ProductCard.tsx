@@ -111,7 +111,7 @@ const ProductCard = ({ product }) => {
         </ScrollView>
 
         <View style={styles.pagination}>
-          {product.images.map((_, index) => (
+          {product.images.map((_image, index) => (
             <Pressable
               key={index}
               style={[

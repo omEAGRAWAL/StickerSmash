@@ -54,7 +54,7 @@ const SearchHeader = () => {
           </TouchableOpacity>
         )}
         <TouchableOpacity onPress={handleSearchSubmit}>
-          <Ionicons name="camera-outline" size={24} color="#007AFF" />
+          <Ionicons name="search" size={24} color="#007AFF" />
         </TouchableOpacity>
       </View>
     </View>
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
+    color: "#000",
   },
 });
 

@@ -1,7 +1,10 @@
 import { Platform, Linking } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { useRoute } from "@react-navigation/native";
+
 export async function setItem(key, value) {
+  
   if (Platform.OS === "web") {
     // For web: Use localStorage
     let cart = localStorage.getItem(key);
@@ -112,6 +115,8 @@ export async function Placeorder(address) {
 
         // Open WhatsApp with the properly encoded message
         window.open(`https://wa.me/917609098787?text=${encodedMessage}`);
+
+        localStorage.removeItem("cart");
       }
     } else {
       // Mobile implementation
