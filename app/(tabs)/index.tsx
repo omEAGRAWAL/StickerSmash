@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
+import WhatsAppChatWidget from "@/components/Whatsapp";
 
 // Replace with actual deployed API URLs or environment variables
 const apiurl = "https://smyerver.vercel.app";
@@ -56,6 +57,13 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
+      <WhatsAppChatWidget
+        phoneNumber="917609098787"
+        backgroundColor="#00e785"
+        brandName="Om Fancy"
+        welcomeText="Hi there"
+        position="right"
+      />
       {/* <Text style={styles.header}>Om Fancy</Text> */}
 
       {loadingCategories ? (
