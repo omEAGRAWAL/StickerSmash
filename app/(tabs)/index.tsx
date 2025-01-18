@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, Text, ActivityIndicator } from "react-native";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
 
 // Replace with actual deployed API URLs or environment variables
 const apiurl = "https://smyerver.vercel.app";
 const storeid = "676f82c37ea3d34df66c6bd0";
-
-
 
 export default function Index() {
   const [products, setProducts] = useState([]);
@@ -18,7 +22,9 @@ export default function Index() {
   const getProducts = async () => {
     try {
       setLoadingProducts(true);
-      const response = await fetch(`${apiurl}/api/products/?storeid=${storeid}`);
+      const response = await fetch(
+        `${apiurl}/api/products/?storeid=${storeid}`
+      );
       const data = await response.json();
       setProducts(data);
     } catch (error) {
@@ -61,18 +67,23 @@ export default function Index() {
       )}
 
       {loadingProducts ? (
-        <ActivityIndicator size="large" color="#700" style={{ marginTop: 20 }} />
+        <ActivityIndicator
+          size="large"
+          color="#700"
+          style={{ marginTop: 20 }}
+        />
       ) : products.length > 0 ? (
-        
         <FlatList
-  data={products}
-  renderItem={({ item }) => <ProductCard product={item} />}
-  keyExtractor={(item) => item._id}
-  numColumns={2} // Two columns
-  contentContainerStyle={{ paddingHorizontal: 10 }}
-  columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 15 }}
-/>
-
+          data={products}
+          renderItem={({ item }) => <ProductCard product={item} />}
+          keyExtractor={(item) => item._id}
+          numColumns={2} // Two columns
+          contentContainerStyle={{ paddingHorizontal: 10 }}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            marginBottom: 15,
+          }}
+        />
       ) : (
         <Text style={styles.emptyText}>No products available</Text>
       )}
@@ -85,6 +96,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     backgroundColor: "#fff",
+    width: "100%",
   },
   header: {
     color: "#700",
@@ -102,7 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
 
 //can we export the product
 

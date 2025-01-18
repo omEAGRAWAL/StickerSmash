@@ -1,11 +1,9 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useLocalSearchParams } from 'expo-router';
-import ProductPage from "@/components/ProductPage";  // Importing ProductPage component
+import { ScrollView, View, Text, StyleSheet, Dimensions } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import ProductPage from "@/components/ProductPage";
 
 const ProductDetails = () => {
-  const { id } = useLocalSearchParams(); // Destructure 'id' from params
-
-  
+  const { id } = useLocalSearchParams();
 
   if (!id) {
     return (
@@ -16,18 +14,24 @@ const ProductDetails = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <ProductPage productId={id} />
-
-      
-       {/* Pass the ID to ProductPage */}
-    </View>
+    <ScrollView style={styles.scrollView}>
+      <View style={styles.container}>
+        <ProductPage productId={id} />
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
   container: {
-   
+    flex: 1,
+    width: "100%",
+    maxWidth: 480, // Common mobile breakpoint
+    alignSelf: "center",
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 24,
