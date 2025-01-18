@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     backgroundColor: "#fff", // Optional header background
-    // width: "100%",
+    width: "100%",
     //should not exceed frame
     // maxWidth:Window.innerWidth,
     // width: Dimensions.get("window").width,

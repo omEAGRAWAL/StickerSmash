@@ -8,7 +8,6 @@ import {
   Image,
   StyleSheet,
   TextInput,
-  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { useState, useEffect } from "react";
@@ -34,8 +33,8 @@ export default function Cart() {
   useEffect(() => {
     const fetchProductsFromAPI = async () => {
       try {
-        const products = await fetchProducts();
-        setProducts(products);
+        const fetchedProducts = await fetchProducts();
+        setProducts(fetchedProducts);
         setLoadingProducts(false);
       } catch (err) {
         console.error("Failed to fetch products:", err);
@@ -95,29 +94,36 @@ export default function Cart() {
       !address.city ||
       !address.area
     ) {
-      setError("Please fill in all required address fields.");
+      alert("Please fill in all required address fields.");
       return false;
     }
     if (!/^\d{10}$/.test(address.mobile)) {
-      setError("Please enter a valid 10-digit mobile number.");
+      alert("Please enter a valid 10-digit mobile number.");
       return false;
     }
     if (!/^\d{6}$/.test(address.pincode)) {
-      setError("Please enter a valid 6-digit pincode.");
+      alert("Please enter a valid 6-digit pincode.");
       return false;
     }
+
     setError("");
     return true;
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (validateAddress()) {
-      if (Platform.OS === "web") {
-        localStorage.setItem("address", JSON.stringify(address));
-      } else {
-        AsyncStorage.setItem("address", JSON.stringify(address));
+      try {
+        if (Platform.OS === "web") {
+          localStorage.setItem("address", JSON.stringify(address));
+        } else {
+          await AsyncStorage.setItem("address", JSON.stringify(address));
+        }
+        return await Placeorder(address);
+        // alert("Order placed successfully!");
+      } catch (err) {
+        console.error("Error placing order:", err);
+        alert("Failed to place order. Please try again.");
       }
-      Placeorder(address);
     }
   };
 
@@ -149,7 +155,7 @@ export default function Cart() {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Shopping Cart</Text>
       {loadingProducts ? (
         <Text>Loading...</Text>
@@ -195,7 +201,7 @@ export default function Cart() {
           </TouchableOpacity>
         </>
       )}
-    </ScrollView>
+    </View>
   );
 }
 
@@ -212,13 +218,7 @@ const styles = StyleSheet.create({
     color: "#333",
     textAlign: "center",
   },
-  message: {
-    fontSize: 18,
-    color: "#888",
-    textAlign: "center",
-    marginVertical: 20,
-  },
-  errorMessage: {
+  error: {
     fontSize: 18,
     color: "red",
     textAlign: "center",
@@ -290,24 +290,8 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     alignItems: "center",
   },
-  toggleButtonText: {
-    fontSize: 16,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  formContainer: {
-    marginVertical: 20,
-    backgroundColor: "#222",
-    padding: 15,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-  },
   input: {
-    backgroundColor: "#aaa",
+    backgroundColor: "#fff",
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
@@ -321,10 +305,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     marginTop: 20,
-  },
-  placeOrderButtonText: {
-    fontSize: 16,
-    color: "#fff",
-    fontWeight: "bold",
   },
 });

@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { Platform, Linking } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export async function setItem(key, value) {
@@ -130,19 +130,36 @@ export async function Placeorder(address) {
         });
 
         message += "\nPlease confirm my order";
-        message += { address };
+        // message += { address };
+        message += "Address\n\n";
+        message += "Name:  " + address.name + "\n";
+        message += "Mobile" + address.mobile + "\n";
+        message += "City: " + address.city + "\n";
+        message += "Area: " + address.area + "\n";
+        message += "Pincode: " + address.pincode + "\n";
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `whatsapp://send?phone=917609098787&text=${encodedMessage}`;
 
-        const supported = await Linking.canOpenURL(whatsappUrl);
-        if (supported) {
-          await Linking.openURL(whatsappUrl);
-        } else {
-          await Linking.openURL(
-            `https://wa.me/917609098787?text=${encodedMessage}`
-          );
-        }
+        Linking.canOpenURL(whatsappUrl)
+          .then((supported) => {
+            if (supported) {
+              return Linking.openURL(whatsappUrl);
+            } else {
+              // Fallback to web WhatsApp if app is not installed
+              return Linking.openURL(whatsappUrl);
+            }
+          })
+          .catch((err) => console.error("An error occurred", err));
+
+        // const supported = await Linking.canOpenURL(whatsappUrl);
+        // if (supported) {
+        //   await Linking.openURL(whatsappUrl);
+        // } else {
+        //   await Linking.openURL(
+        //     `https://wa.me/917609098787?text=${encodedMessage}`
+        //   );
+        // }
 
         await AsyncStorage.removeItem("cart");
       }
