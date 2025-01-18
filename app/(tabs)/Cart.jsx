@@ -2,8 +2,9 @@ import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, Button, FlatList, Image, StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
-import { Link } from "expo-router";// Replace with your store ID
+import { Link } from "expo-router"; // Replace with your store ID
 import { fetchProducts } from "@/components/context/getProduct";
+import { Placeorder } from "@/components/context/Cart";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
@@ -121,6 +122,8 @@ export default function Cart() {
           )}
         />
       )}
+
+      <Button title="Place Order" onPress={() => Placeorder()} />
     </View>
   );
 }

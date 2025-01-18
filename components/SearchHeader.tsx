@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, Link } from "expo-router";
@@ -69,6 +70,9 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     backgroundColor: "#fff", // Optional header background
     // width: "100%",
+    //should not exceed frame
+    // maxWidth:Window.innerWidth,
+    width: Dimensions.get("window").width,
     height: 60, // Adjust as per design requirements
   },
   title: {
@@ -85,6 +89,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flex: 1,
     marginLeft: 15,
+    marginRight: 10,
     height: 40,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
