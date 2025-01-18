@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     backgroundColor: "#fff", // Optional header background
-    width: "100%",
+    // width: "100%",
     height: 60, // Adjust as per design requirements
   },
   title: {
