@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     // width: "100%",
     //should not exceed frame
     // maxWidth:Window.innerWidth,
-    width: Dimensions.get("window").width,
+    // width: Dimensions.get("window").width,
     height: 60, // Adjust as per design requirements
   },
   title: {

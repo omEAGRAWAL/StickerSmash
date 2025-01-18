@@ -74,7 +74,10 @@ export async function checkCart(key, id) {
   return false;
 }
 
-export async function Placeorder() {
+export async function Placeorder(address) {
+  console.log("Placeorder called");
+  console.log("Address:", address);
+  //{name: 'om agrawal', mobile: '7609098787', pincode: '609609', city: 'karaikal', area: 'dwq', …}
   try {
     if (Platform.OS === "web") {
       let cart = localStorage.getItem("cart");
@@ -94,6 +97,16 @@ export async function Placeorder() {
 
         message += "\nPlease confirm my order";
 
+        message += "-------------------------------\n\n";
+        //{name: 'om agrawal', mobile: '7609098787', pincode: '609609', city: 'karaikal', area: 'dwq', …}
+        message += "Address\n\n";
+        message += "Name:  " + address.name + "\n";
+        message += "Mobile" + address.mobile + "\n";
+        message += "City: " + address.city + "\n";
+        message += "Area: " + address.area + "\n";
+        message += "Pincode: " + address.pincode + "\n";
+
+        // message += address.stringify();
         // Encode the entire message at once
         const encodedMessage = encodeURIComponent(message);
 
@@ -117,6 +130,7 @@ export async function Placeorder() {
         });
 
         message += "\nPlease confirm my order";
+        message += { address };
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `whatsapp://send?phone=917609098787&text=${encodedMessage}`;
