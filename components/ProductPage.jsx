@@ -1,205 +1,8 @@
-// import React, { useState, useEffect } from "react";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { Platform } from "react-native";
-// import { useRoute } from "@react-navigation/native";
-
-// import {
-//   StyleSheet,
-//   View,
-//   Text,
-//   Image,
-//   ScrollView,
-//   TouchableOpacity,
-//   ActivityIndicator,
-// } from "react-native";
-// import { Ionicons } from "@expo/vector-icons";
-// import { setItem, checkCart } from "./context/Cart";
-// import {
-//   addToWishlist,
-//   removeFromWishlist,
-//   getWishlist,
-//   checkWishlist,
-// } from "./context/Wishlist";
-// import { fetchProducts } from "./context/getProduct";
-
-// const ProductPage = ({ productId }) => {
-//   const [products, setProducts] = useState([]);
-//   const [loadingProducts, setLoadingProducts] = useState(true);
-//   const [error, setError] = useState(null);
-//   const [wishlist, setWishlist] = useState([]);
-//   const [wishlisted, setWishlisted] = useState(false);
-//   const [inCart, setInCart] = useState(false);
-//   const route = useRoute();
-
-//   // Fetch products on component mount
-//   useEffect(() => {
-//     const fetchProductsFromAPI = async () => {
-//       try {
-//         const products = await fetchProducts();
-//         setProducts(products);
-//       } catch (error) {
-//         setError("Failed to fetch products");
-//       } finally {
-//         setLoadingProducts(false);
-//       }
-//     };
-//     fetchProductsFromAPI();
-//   }, [route.name]);
-
-//   // Fetch wishlist and check if the product is wishlisted
-//   useEffect(() => {
-//     const fetchWishlistAndCheck = async () => {
-//       const items = await getWishlist("wishlist");
-//       setWishlist(items);
-//       setWishlisted(await checkWishlist("wishlist", productId));
-//       setInCart(await checkCart("cart", productId));
-//     };
-//     fetchWishlistAndCheck();
-//   }, [productId, route.name]);
-
-//   // Find the product by productId
-//   const product = products.find((prod) => prod._id === productId);
-
-//   if (loadingProducts) {
-//     return (
-//       <View style={styles.loadingContainer}>
-//         <ActivityIndicator size="large" color="#0000ff" />
-//         <Text>Loading products...</Text>
-//       </View>
-//     );
-//   }
-
-//   if (error) {
-//     return (
-//       <View style={styles.errorContainer}>
-//         <Text style={styles.errorText}>{error}</Text>
-//       </View>
-//     );
-//   }
-
-//   if (!product) {
-//     return (
-//       <View style={styles.errorContainer}>
-//         <Text style={styles.errorText}>Product not found!</Text>
-//       </View>
-//     );
-//   }
-
-//   // Manage wishlist toggle
-//   const handleWishlist = async (product) => {
-//     if (wishlisted) {
-//       await removeFromWishlist("wishlist", product._id);
-//       setWishlisted(false);
-//     } else {
-//       await addToWishlist("wishlist", product);
-//       setWishlisted(true);
-//     }
-//   };
-
-//   // Manage cart
-//   const handleAddToCart = () => {
-//     setItem("cart", { _id: product._id, quantity: 1 });
-//     setInCart(true); // Update the state to reflect the item is in the cart
-//   };
-
-//   return (
-//     <ScrollView style={styles.container}>
-//       <Image source={{ uri: product.images[0] }} style={styles.image} />
-//       <View style={styles.infoContainer}>
-//         <Text style={styles.price}>${product.price}</Text>
-//         <Text style={styles.description}>{product.description}</Text>
-
-//         {/* Add to Cart Button */}
-//         <TouchableOpacity style={styles.cartButton} onPress={handleAddToCart}>
-//           <Ionicons
-//             name={inCart ? "cart" : "cart-outline"}
-//             size={24}
-//             color={inCart ? "green" : "black"}
-//           />
-//           <Text style={styles.cartButtonText}>
-//             {inCart ? "Add One More" : "Add to Cart"}
-//           </Text>
-//         </TouchableOpacity>
-
-//         {/* Wishlist Button */}
-//         <TouchableOpacity
-//           style={styles.wishlistButton}
-//           onPress={() => handleWishlist(product)}
-//         >
-//           <Ionicons
-//             name={wishlisted ? "heart" : "heart-outline"}
-//             size={24}
-//             color={wishlisted ? "red" : "black"}
-//           />
-//         </TouchableOpacity>
-//       </View>
-//     </ScrollView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     backgroundColor: "#eee",
-//   },
-//   image: {
-//     width: "100%",
-//     aspectRatio: 1,
-//   },
-//   infoContainer: {
-//     padding: 16,
-//     backgroundColor: "#ddd",
-//     borderTopLeftRadius: 16,
-//     borderTopRightRadius: 16,
-//     marginTop: -20,
-//   },
-//   price: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     color: "#000",
-//   },
-//   description: {
-//     fontSize: 14,
-//     color: "#555",
-//     marginVertical: 8,
-//   },
-//   cartButton: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "#f0f0f0",
-//     padding: 10,
-//     borderRadius: 8,
-//     marginTop: 10,
-//   },
-//   wishlistButton: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "#fff",
-//     padding: 10,
-//     borderRadius: 8,
-//     marginTop: 10,
-//   },
-//   loadingContainer: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   errorContainer: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   errorText: {
-//     color: "red",
-//     fontSize: 18,
-//   },
-// });
-
-// export default ProductPage;
 import React, { useState, useEffect, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Platform } from "react-native";
-import { useRoute } from "@react-navigation/native";
 import {
+  Platform,
+  Dimensions,
   StyleSheet,
   View,
   Text,
@@ -209,37 +12,47 @@ import {
   ActivityIndicator,
   Animated,
   PanResponder,
-  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { setItem, checkCart } from "./context/Cart";
+import { useRoute } from "@react-navigation/native";
+import { useWishlist } from "./context/WishlistContext";
 import {
   addToWishlist,
   removeFromWishlist,
-  getWishlist,
-  checkWishlist,
+  checkInWishlist,
 } from "./context/Wishlist";
-import { fetchProducts } from "./context/getProduct";
+import { useProductContext } from "./context/ProductContext";
+import { useCart } from "./context/CartContext";
 
 const ProductPage = ({ productId }) => {
-  const [products, setProducts] = useState([]);
+  const { wishlist, addToWishlist, removeFromWishlist, checkInWishlist } =
+    useWishlist();
+  const { products, loading, error } = useProductContext();
+  const { cart, addToCart, existsInCart } = useCart();
+
   const [loadingProducts, setLoadingProducts] = useState(true);
-  const [error, setError] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
   const [wishlisted, setWishlisted] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const route = useRoute();
 
   const scrollViewRef = useRef(null);
   const panResponder = useRef(null);
   const position = useRef(new Animated.Value(0)).current;
   const windowWidth = Dimensions.get("window").width;
+  const route = useRoute();
 
   const product = products.find((prod) => prod._id === productId);
 
-  // Initialize PanResponder for swipe gestures
   useEffect(() => {
+    if (productId) {
+      setInCart(existsInCart(productId));
+      setWishlisted(checkInWishlist(productId));
+      setLoadingProducts(false); // Set loading state to false after product is set
+    }
+  }, [productId, existsInCart, wishlist]);
+
+  useEffect(() => {
+    // Initialize PanResponder for swipe gestures
     if (product?.images) {
       panResponder.current = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -253,9 +66,7 @@ const ProductPage = ({ productId }) => {
         onPanResponderRelease: (_, { dx }) => {
           position.flattenOffset();
           const distance = Math.abs(dx);
-
           if (distance > 50) {
-            // Minimum distance to trigger slide
             const direction = dx > 0 ? -1 : 1;
             const newIndex = Math.max(
               0,
@@ -263,8 +74,6 @@ const ProductPage = ({ productId }) => {
             );
             handleImageChange(newIndex);
           }
-
-          // Reset position with animation
           Animated.spring(position, {
             toValue: 0,
             useNativeDriver: true,
@@ -274,38 +83,21 @@ const ProductPage = ({ productId }) => {
     }
   }, [currentImageIndex, product]);
 
-  useEffect(() => {
-    const fetchProductsFromAPI = async () => {
-      try {
-        const products = await fetchProducts();
-        setProducts(products);
-      } catch (error) {
-        setError("Failed to fetch products");
-      } finally {
-        setLoadingProducts(false);
-      }
-    };
-    fetchProductsFromAPI();
-  }, [route.name]);
+  const handleAddToCart = () => {
+    addToCart({ _id: productId });
+  };
 
-  useEffect(() => {
-    const fetchWishlistAndCheck = async () => {
-      const items = await getWishlist("wishlist");
-      setWishlist(items);
-      setWishlisted(await checkWishlist("wishlist", productId));
-      setInCart(await checkCart("cart", productId));
-    };
-    fetchWishlistAndCheck();
-  }, [productId, route.name]);
-
-  // const product = products.find((prod) => prod._id === productId);
+  const handleWishlist = (product) => {
+    if (wishlisted) {
+      removeFromWishlist(product._id);
+    } else {
+      addToWishlist({ _id: product._id });
+    }
+  };
 
   const handleImageChange = (index) => {
     setCurrentImageIndex(index);
-    scrollViewRef.current?.scrollTo({
-      x: index * windowWidth,
-      animated: true,
-    });
+    scrollViewRef.current?.scrollTo({ x: index * windowWidth, animated: true });
   };
 
   const handleNext = () => {
@@ -320,30 +112,7 @@ const ProductPage = ({ productId }) => {
     }
   };
 
-  const handleWishlist = async (product) => {
-    if (wishlisted) {
-      await removeFromWishlist("wishlist", product._id);
-      setWishlisted(false);
-    } else {
-      await addToWishlist("wishlist", product);
-      setWishlisted(true);
-    }
-  };
-
-  const handleAddToCart = () => {
-    setItem("cart", { _id: product._id, quantity: 1 });
-    setInCart(true);
-  };
-
-  if (loadingProducts) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading products...</Text>
-      </View>
-    );
-  }
-
+  // Error handling for product or network failure
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -352,6 +121,7 @@ const ProductPage = ({ productId }) => {
     );
   }
 
+  // If product is not found
   if (!product) {
     return (
       <View style={styles.errorContainer}>
@@ -362,13 +132,12 @@ const ProductPage = ({ productId }) => {
 
   return (
     <ScrollView style={styles.container}>
+      {/* Image Carousel Section */}
       <View style={styles.imageContainer}>
         <Animated.View
           style={[
             styles.carouselContainer,
-            {
-              transform: [{ translateX: position }],
-            },
+            { transform: [{ translateX: position }] },
           ]}
           {...panResponder.current?.panHandlers}
         >
@@ -404,7 +173,6 @@ const ProductPage = ({ productId }) => {
               <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
           )}
-
           {currentImageIndex < product.images.length - 1 && (
             <TouchableOpacity
               style={[styles.navButton, styles.rightButton]}
@@ -430,13 +198,27 @@ const ProductPage = ({ productId }) => {
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* Wishlist Icon */}
+          <TouchableOpacity
+            style={styles.wishlistIcon}
+            onPress={() => handleWishlist(product)}
+          >
+            <Ionicons
+              name={wishlisted ? "heart" : "heart-outline"}
+              size={28}
+              color={wishlisted ? "#e74c3c" : "#fff"}
+            />
+          </TouchableOpacity>
         </Animated.View>
       </View>
 
+      {/* Product Details Section */}
       <View style={styles.infoContainer}>
         <Text style={styles.price}>${product.price}</Text>
         <Text style={styles.description}>{product.description}</Text>
 
+        {/* Add to Cart Button */}
         <TouchableOpacity style={styles.cartButton} onPress={handleAddToCart}>
           <Ionicons
             name={inCart ? "cart" : "cart-outline"}
@@ -447,17 +229,6 @@ const ProductPage = ({ productId }) => {
             {inCart ? "Add One More" : "Add to Cart"}
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.wishlistButton}
-          onPress={() => handleWishlist(product)}
-        >
-          <Ionicons
-            name={wishlisted ? "heart" : "heart-outline"}
-            size={24}
-            color={wishlisted ? "red" : "black"}
-          />
-        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -465,22 +236,21 @@ const ProductPage = ({ productId }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#eee",
+    flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 4,
   },
   imageContainer: {
-    position: "relative",
-    // po
-    height: 300,
-    width: 300,
-    // width: "50%",
+    height: Dimensions.get("window").height * 0.5,
+    backgroundColor: "#f8f9fa",
   },
   carouselContainer: {
-    // position: "relative",
+    flex: 1,
   },
   image: {
-    // aspectRatio: 1,
-    width: 200,
-    height: 200,
+    height: "100%",
+    width: "100%",
+    resizeMode: "cover",
   },
   navButton: {
     position: "absolute",
@@ -511,57 +281,61 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.5)",
   },
   paginationDotActive: {
-    backgroundColor: "white",
+    backgroundColor: "#fff",
+    width: 24,
+  },
+  wishlistIcon: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    borderRadius: 10,
+    padding: 5,
   },
   infoContainer: {
-    padding: 16,
-    backgroundColor: "#ddd",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    marginTop: -20,
+    padding: 24,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   price: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000",
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#3498db",
+    marginBottom: 16,
   },
   description: {
-    fontSize: 14,
-    color: "#555",
-    marginVertical: 8,
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#666",
+    marginBottom: 24,
   },
   cartButton: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 10,
+    justifyContent: "center",
+    backgroundColor: "#3498db",
+    padding: 16,
+    borderRadius: 12,
+    gap: 8,
   },
   cartButtonText: {
-    marginLeft: 8,
-  },
-  wishlistButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 24,
   },
   errorText: {
-    color: "red",
-    fontSize: 18,
+    fontSize: 16,
+    color: "#e74c3c",
+    textAlign: "center",
   },
 });
 

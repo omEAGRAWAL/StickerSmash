@@ -1,215 +1,5 @@
-// import { Platform } from "react-native";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-
-// import { useRoute } from "@react-navigation/native";
-// import {
-//   View,
-//   Text,
-//   Button,
-//   FlatList,
-//   Image,
-//   StyleSheet,
-//   TextInput,
-//   TouchableOpacity,
-// } from "react-native";
-// import { useState, useEffect } from "react";
-// import { Link } from "expo-router";
-// import { fetchProducts } from "@/components/context/getProduct";
-// import { Placeorder } from "@/components/context/Cart";
-
-// export default function Cart() {
-//   const [cartItems, setCartItems] = useState([]);
-//   const [products, setProducts] = useState([]);
-//   const [loadingProducts, setLoadingProducts] = useState(true);
-//   const [error, setError] = useState("");
-//   const [address, setAddress] = useState({
-//     name: "",
-//     mobile: "",
-//     pincode: "",
-//     city: "",
-//     area: "",
-//   });
-//   const route = useRoute();
-//   const [showAddressForm, setShowAddressForm] = useState(false);
-
-//   // Fetch products
-//   useEffect(() => {
-//     const fetchProductsFromAPI = async () => {
-//       try {
-//         const fetchedProducts = await fetchProducts();
-//         setProducts(fetchedProducts);
-//         setLoadingProducts(false);
-//       } catch (err) {
-//         console.error("Failed to fetch products:", err);
-//         setError("Failed to load products. Please try again.");
-//       }
-//     };
-//     fetchProductsFromAPI();
-//   }, [route.name]);
-
-//   // Load cart and address from storage
-//   useEffect(() => {
-//     const loadCartAndAddress = async () => {
-//       try {
-//         const savedCart =
-//           Platform.OS === "web"
-//             ? JSON.parse(localStorage.getItem("cart") || "[]")
-//             : JSON.parse((await AsyncStorage.getItem("cart")) || "[]");
-//         const savedAddress =
-//           Platform.OS === "web"
-//             ? JSON.parse(localStorage.getItem("address") || "{}")
-//             : JSON.parse((await AsyncStorage.getItem("address")) || "{}");
-
-//         setCartItems(savedCart);
-//         setAddress(savedAddress);
-//       } catch (err) {
-//         console.error("Error loading cart or address:", err);
-//       }
-//     };
-//     loadCartAndAddress();
-//   }, [route.name]);
-
-//   const removeFromCart = (id) => {
-//     const updatedCart = cartItems.reduce((result, item) => {
-//       if (item._id === id) {
-//         item.quantity--;
-//         if (item.quantity > 0) result.push(item);
-//       } else {
-//         result.push(item);
-//       }
-//       return result;
-//     }, []);
-
-//     setCartItems(updatedCart);
-
-//     if (Platform.OS === "web") {
-//       localStorage.setItem("cart", JSON.stringify(updatedCart));
-//     } else {
-//       AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
-//     }
-//   };
-
-//   const validateAddress = () => {
-//     if (
-//       !address.name ||
-//       !address.mobile ||
-//       !address.pincode ||
-//       !address.city ||
-//       !address.area
-//     ) {
-//       alert("Please fill in all required address fields.");
-//       return false;
-//     }
-//     if (!/^\d{10}$/.test(address.mobile)) {
-//       alert("Please enter a valid 10-digit mobile number.");
-//       return false;
-//     }
-//     if (!/^\d{6}$/.test(address.pincode)) {
-//       alert("Please enter a valid 6-digit pincode.");
-//       return false;
-//     }
-
-//     setError("");
-//     return true;
-//   };
-
-//   const handlePlaceOrder = async () => {
-//     if (validateAddress()) {
-//       try {
-//         if (Platform.OS === "web") {
-//           localStorage.setItem("address", JSON.stringify(address));
-//         } else {
-//           await AsyncStorage.setItem("address", JSON.stringify(address));
-//         }
-//         return await Placeorder(address);
-//         // alert("Order placed successfully!");
-//       } catch (err) {
-//         console.error("Error placing order:", err);
-//         alert("Failed to place order. Please try again.");
-//       }
-//     }
-//   };
-
-//   const cartProducts = cartItems.map((cartItem) => {
-//     const product = products.find((prod) => prod._id === cartItem._id);
-//     return { ...cartItem, ...product };
-//   });
-
-//   const renderProduct = ({ item }) => (
-//     <View style={styles.card}>
-//       <Link href={`/product/${item._id}`} style={styles.productLink}>
-//         <View style={styles.item}>
-//           <Image source={{ uri: item.images[0] }} style={styles.image} />
-//           <View style={styles.itemInfo}>
-//             <Text style={styles.productName}>{item.name}</Text>
-//             <Text style={styles.description}>{item.description}</Text>
-//             <Text style={styles.price}>₹{item.price}</Text>
-//             <Text style={styles.quantity}>Quantity: {item.quantity}</Text>
-//             <TouchableOpacity
-//               style={styles.removeButton}
-//               onPress={() => removeFromCart(item._id)}
-//             >
-//               <Text style={styles.removeButtonText}>Remove</Text>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-//       </Link>
-//     </View>
-//   );
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Shopping Cart</Text>
-//       {loadingProducts ? (
-//         <Text>Loading...</Text>
-//       ) : error ? (
-//         <Text style={styles.error}>{error}</Text>
-//       ) : cartProducts.length === 0 ? (
-//         <Text>Your cart is empty!</Text>
-//       ) : (
-//         <>
-//           <FlatList
-//             data={cartProducts}
-//             keyExtractor={(item) => item._id}
-//             renderItem={renderProduct}
-//           />
-//           <TouchableOpacity
-//             style={styles.toggleAddress}
-//             onPress={() => setShowAddressForm(!showAddressForm)}
-//           >
-//             <Text>
-//               {showAddressForm ? "Hide Address Form" : "Enter Delivery Address"}
-//             </Text>
-//           </TouchableOpacity>
-//           {showAddressForm && (
-//             <View>
-//               {["name", "mobile", "pincode", "city", "area"].map((field) => (
-//                 <TextInput
-//                   key={field}
-//                   style={styles.input}
-//                   placeholder={field}
-//                   value={address[field]}
-//                   onChangeText={(text) =>
-//                     setAddress({ ...address, [field]: text })
-//                   }
-//                 />
-//               ))}
-//             </View>
-//           )}
-//           <TouchableOpacity
-//             style={styles.orderButton}
-//             onPress={handlePlaceOrder}
-//           >
-//             <Text>Place Order</Text>
-//           </TouchableOpacity>
-//         </>
-//       )}
-//     </View>
-//   );
-// }
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRoute } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -219,6 +9,9 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+
+import { useProductContext } from "@/components/context/ProductContext";
+import { useCart } from "@/components/context/CartContext";
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "expo-router";
 import { fetchProducts } from "@/components/context/getProduct";
@@ -226,9 +19,11 @@ import { Placeorder } from "@/components/context/Cart";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
-  const [error, setError] = useState("");
+  // const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  // const [error, setError] = useState("");
+  const [showAddressForm, setShowAddressForm] = useState(false);
+
   const [address, setAddress] = useState({
     name: "",
     mobile: "",
@@ -236,106 +31,16 @@ export default function Cart() {
     city: "",
     area: "",
   });
-  const route = useRoute();
-  const [showAddressForm, setShowAddressForm] = useState(false);
 
-  // Function to load cart data
-  const loadCart = useCallback(async () => {
-    try {
-      const savedCart =
-        Platform.OS === "web"
-          ? JSON.parse(localStorage.getItem("cart") || "[]")
-          : JSON.parse((await AsyncStorage.getItem("cart")) || "[]");
-      setCartItems(savedCart);
-    } catch (err) {
-      console.error("Error loading cart:", err);
-    }
-  }, []);
+  const { cart, addToCart, removeFromCart, clearCart } = useCart();
 
-  // Function to load address data
-  const loadAddress = useCallback(async () => {
-    try {
-      const savedAddress =
-        Platform.OS === "web"
-          ? JSON.parse(localStorage.getItem("address") || "{}")
-          : JSON.parse((await AsyncStorage.getItem("address")) || "{}");
-      setAddress(savedAddress);
-    } catch (err) {
-      console.error("Error loading address:", err);
-    }
-  }, []);
-
-  // Setup storage event listener for web
+  // Sync cart from context to local state
   useEffect(() => {
-    if (Platform.OS === "web") {
-      const handleStorageChange = (e) => {
-        if (e.key === "cart") {
-          loadCart();
-        } else if (e.key === "address") {
-          loadAddress();
-        }
-      };
-
-      window.addEventListener("storage", handleStorageChange);
-      return () => window.removeEventListener("storage", handleStorageChange);
-    }
-  }, [loadCart, loadAddress]);
-
-  // Setup polling for mobile (since AsyncStorage doesn't have events)
-  useEffect(() => {
-    let interval;
-    if (Platform.OS !== "web") {
-      interval = setInterval(loadCart, 1000); // Poll every second
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [loadCart]);
+    setCartItems(cart);
+  }, [cart]);
 
   // Fetch products
-  useEffect(() => {
-    const fetchProductsFromAPI = async () => {
-      try {
-        const fetchedProducts = await fetchProducts();
-        setProducts(fetchedProducts);
-        setLoadingProducts(false);
-      } catch (err) {
-        console.error("Failed to fetch products:", err);
-        setError("Failed to load products. Please try again.");
-      }
-    };
-    fetchProductsFromAPI();
-  }, [route.name]);
-
-  // Initial load of cart and address
-  useEffect(() => {
-    loadCart();
-    loadAddress();
-  }, [loadCart, loadAddress]);
-
-  const removeFromCart = async (id) => {
-    const updatedCart = cartItems.reduce((result, item) => {
-      if (item._id === id) {
-        if (item.quantity > 1) {
-          result.push({ ...item, quantity: item.quantity - 1 });
-        }
-      } else {
-        result.push(item);
-      }
-      return result;
-    }, []);
-
-    try {
-      if (Platform.OS === "web") {
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
-      } else {
-        await AsyncStorage.setItem("cart", JSON.stringify(updatedCart));
-      }
-      setCartItems(updatedCart);
-    } catch (err) {
-      console.error("Error updating cart:", err);
-    }
-  };
+  const { products, categories, loading, error } = useProductContext();
 
   const validateAddress = () => {
     if (
@@ -369,7 +74,8 @@ export default function Cart() {
         }
         const result = await Placeorder(address);
         if (result) {
-          setCartItems([]); // Clear cart locally after successful order
+          clearCart(); // Clear cart globally after successful order
+          setCartItems([]); // Clear local cart items
         }
         return result;
       } catch (err) {
@@ -394,15 +100,15 @@ export default function Cart() {
             <Text style={styles.description}>{item.description}</Text>
             <Text style={styles.price}>₹{item.price}</Text>
             <Text style={styles.quantity}>Quantity: {item.quantity}</Text>
-            <TouchableOpacity
-              style={styles.removeButton}
-              onPress={() => removeFromCart(item._id)}
-            >
-              <Text style={styles.removeButtonText}>Remove</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Link>
+      <TouchableOpacity
+        style={styles.removeButton}
+        onPress={() => removeFromCart(item._id)}
+      >
+        <Text style={styles.removeButtonText}>Remove</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -413,7 +119,7 @@ export default function Cart() {
         <Text>Loading...</Text>
       ) : error ? (
         <Text style={styles.error}>{error}</Text>
-      ) : cartProducts.length === 0 ? (
+      ) : cartItems.length == 0 ? (
         <Text>Your cart is empty!</Text>
       ) : (
         <>
@@ -456,16 +162,6 @@ export default function Cart() {
     </View>
   );
 }
-
-// const styles = StyleSheet.create({
-//   // ... existing styles remain the same ...
-//   buttonText: {
-//     color: '#fff',
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   }
-// });
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

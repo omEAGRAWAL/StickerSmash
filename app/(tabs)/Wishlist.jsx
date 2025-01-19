@@ -12,119 +12,50 @@ import {
 } from "react-native";
 import { Link } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
-import {
-  addToWishlist,
-  removeFromWishlist,
-  getWishlist,
-} from "@/components/context/Wishlist";
-import { fetchProducts } from "@/components/context/getProduct";
+import { useWishlist } from "@/components/context/WishlistContext";
+import { useProductContext } from "@/components/context/ProductContext";
 
 export default function Wishlist() {
-  const [wishlist, setWishlist] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [fadeAnims] = useState(new Map());
+  const { wishlist, addToWishlist, removeFromWishlist, checkInWishlist } =
+    useWishlist();
+  const { products, loading, error } = useProductContext();
 
-  // Function to load wishlist data
-  const loadWishlist = useCallback(async () => {
-    try {
-      const items = await getWishlist("wishlist");
-      setWishlist(items);
-    } catch (err) {
-      console.error("Error loading wishlist:", err);
-      setError("Failed to load wishlist");
-    }
-  }, []);
+  // Filter wishlist products from the products list
+  const wishlistProduct = products.filter((product) =>
+    wishlist.some((item) => item._id === product._id)
+  );
+  // Define fadeAnim as an Animated value
+  const fadeAnim = useState(new Animated.Value(0))[0];
 
-  // Setup storage event listener for web
-  useEffect(() => {
-    if (Platform.OS === "web") {
-      const handleStorageChange = (e) => {
-        if (e.key === "wishlist") {
-          loadWishlist();
-        }
-      };
-
-      window.addEventListener("storage", handleStorageChange);
-      return () => window.removeEventListener("storage", handleStorageChange);
-    } else {
-      // For mobile: Poll for updates
-      const intervalId = setInterval(loadWishlist, 1000);
-      return () => clearInterval(intervalId);
-    }
-  }, [loadWishlist]);
-
-  // Initial load of wishlist and products
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        await loadWishlist();
-        const fetchedProducts = await fetchProducts();
-        setProducts(fetchedProducts);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error initializing:", err);
-        setError("Failed to initialize");
-        setLoading(false);
-      }
-    };
-    initialize();
-  }, [loadWishlist]);
-
-  // Get fade animation for item
+  // Function to animate fade-in effect for each item
   const getFadeAnim = useCallback(
     (id) => {
-      if (!fadeAnims.has(id)) {
-        fadeAnims.set(id, new Animated.Value(1));
-      }
-      return fadeAnims.get(id);
-    },
-    [fadeAnims]
-  );
-
-  const handleRemoveFromWishlist = useCallback(
-    async (id) => {
-      const fadeAnim = getFadeAnim(id);
-
       Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
+        toValue: 1,
+        duration: 500,
         useNativeDriver: true,
-      }).start(async () => {
-        try {
-          await removeFromWishlist("wishlist", id);
-          await loadWishlist();
-          fadeAnim.setValue(1);
-        } catch (err) {
-          console.error("Error removing from wishlist:", err);
-          fadeAnim.setValue(1); // Reset animation if error
-        }
-      });
+      }).start();
+      return fadeAnim;
     },
-    [getFadeAnim, loadWishlist]
+    [fadeAnim]
   );
-
-  // Combine wishlist items with product details
-  const wishlistWithDetails = wishlist.map((item) => {
-    const product = products.find((p) => p._id === item._id);
-    return { ...item, ...product };
-  });
 
   const renderItem = useCallback(
     ({ item }) => {
-      const fadeAnim = getFadeAnim(item._id);
+      const fade = getFadeAnim(item._id);
 
       return (
-        <Animated.View style={[styles.itemContainer, { opacity: fadeAnim }]}>
-          <Link href={`/product/${item._id}`} style={styles.itemLink}>
+        <Animated.View style={[styles.itemContainer, { opacity: fade }]}>
+          
             <View style={styles.item}>
+            <Link href={`/product/${item._id}`} style={styles.itemLink}>
               <Image
                 source={{
                   uri: item.images?.[0] || "https://via.placeholder.com/100",
                 }}
                 style={styles.image}
               />
+               </Link>
               <View style={styles.info}>
                 <Text style={styles.name} numberOfLines={2}>
                   {item.name || "Unknown Product"}
@@ -138,7 +69,7 @@ export default function Wishlist() {
 
                 <TouchableOpacity
                   style={styles.removeButton}
-                  onPress={() => handleRemoveFromWishlist(item._id)}
+                  onPress={() => removeFromWishlist(item._id)}
                 >
                   <MaterialIcons name="favorite" size={20} color="#fff" />
                   <Text style={styles.removeButtonText}>
@@ -147,11 +78,11 @@ export default function Wishlist() {
                 </TouchableOpacity>
               </View>
             </View>
-          </Link>
+         
         </Animated.View>
       );
     },
-    [getFadeAnim, handleRemoveFromWishlist]
+    [getFadeAnim]
   );
 
   if (loading) {
@@ -174,15 +105,12 @@ export default function Wishlist() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>My Wishlist</Text>
-        <Text style={styles.subtitle}>
-          {wishlistWithDetails.length}{" "}
-          {wishlistWithDetails.length === 1 ? "item" : "items"}
-        </Text>
+        <Text style={styles.subtitle}></Text>
       </View>
 
-      {wishlistWithDetails.length > 0 ? (
+      {wishlistProduct.length > 0 ? (
         <FlatList
-          data={wishlistWithDetails}
+          data={wishlistProduct}
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}

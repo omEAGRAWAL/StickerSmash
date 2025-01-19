@@ -9,49 +9,11 @@ import {
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
 import WhatsAppChatWidget from "@/components/Whatsapp";
-
-// Replace with actual deployed API URLs or environment variables
-const apiurl = "https://smyerver.vercel.app";
-const storeid = "676f82c37ea3d34df66c6bd0";
+import { useProductContext } from "@/components/context/ProductContext";
 
 export default function Index() {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
-  const [loadingCategories, setLoadingCategories] = useState(true);
-
-  const getProducts = async () => {
-    try {
-      setLoadingProducts(true);
-      const response = await fetch(
-        `${apiurl}/api/products/?storeid=${storeid}`
-      );
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-    } finally {
-      setLoadingProducts(false);
-    }
-  };
-
-  const getCategories = async () => {
-    try {
-      setLoadingCategories(true);
-      const response = await fetch(`${apiurl}/api/categories`);
-      const data = await response.json();
-      setCategories(data);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    } finally {
-      setLoadingCategories(false);
-    }
-  };
-
-  useEffect(() => {
-    getProducts();
-    getCategories();
-  }, []);
+  const { products, categories, loadingCategories, loadingProducts } =
+    useProductContext();
 
   const renderProductCard = ({ item }) => <ProductCard product={item} />;
 
