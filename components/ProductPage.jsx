@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: Dimensions.get("window").height * 0.5,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#fff",
   },
   carouselContainer: {
     flex: 1,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   View,
   TouchableOpacity,
@@ -6,54 +6,84 @@ import {
   Linking,
   Image,
   StyleSheet,
+  Platform,
+  Dimensions,
+  ActivityIndicator,
 } from "react-native";
-import { WebView } from "react-native-webview";
+import { useState, useCallback } from "react";
+
+const WHATSAPP_LOGO = require("./whatsapp-logo.jpg"); // It's better to include the image locally
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const IS_SMALL_DEVICE = SCREEN_WIDTH < 375;
+
+const WhatsAppButton = memo(({ onPress, backgroundColor, isLoading }) => (
+  <TouchableOpacity
+    style={[styles.button, { backgroundColor }]}
+    onPress={onPress}
+    activeOpacity={0.7}
+    disabled={isLoading}
+  >
+    {isLoading ? (
+      <ActivityIndicator color="#FFFFFF" size="small" />
+    ) : (
+      <>
+        <Image
+          source={WHATSAPP_LOGO}
+          style={styles.icon}
+          defaultSource={WHATSAPP_LOGO}
+        />
+        <Text style={styles.text}>Chat with us</Text>
+      </>
+    )}
+  </TouchableOpacity>
+));
 
 const WhatsAppChatWidget = ({
-  backgroundColor = "#00e785",
+  backgroundColor = "#25D366", // Updated to official WhatsApp color
   brandName = "Om Fancy",
   welcomeText = "Hi there!\nHow can I help you?",
   phoneNumber = "917609098787",
   position = "right",
+  bottomOffset = 20,
 }) => {
-  const handlePress = () => {
-    // Format the welcome text for WhatsApp URL
-    const message = encodeURIComponent(welcomeText);
-    const whatsappUrl = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
+  const [isLoading, setIsLoading] = useState(false);
 
-    Linking.canOpenURL(whatsappUrl)
-      .then((supported) => {
-        if (supported) {
-          return Linking.openURL(whatsappUrl);
-        } else {
-          // Fallback to web WhatsApp if app is not installed
-          return Linking.openURL(
-            `https://wa.me/${phoneNumber}?text=${message}`
-          );
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
-  };
+  const handlePress = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const message = encodeURIComponent(welcomeText);
+      const whatsappUrl = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
+
+      const canOpen = await Linking.canOpenURL(whatsappUrl);
+
+      if (canOpen) {
+        await Linking.openURL(whatsappUrl);
+      } else {
+        // Fallback to web WhatsApp
+        await Linking.openURL(`https://wa.me/${phoneNumber}?text=${message}`);
+      }
+    } catch (error) {
+      console.error("Error opening WhatsApp:", error);
+      // You could show an error message to the user here
+    } finally {
+      setIsLoading(false);
+    }
+  }, [phoneNumber, welcomeText]);
 
   return (
     <View
       style={[
         styles.container,
         position === "right" ? styles.rightPosition : styles.leftPosition,
+        { bottom: bottomOffset },
       ]}
     >
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor }]}
+      <WhatsAppButton
         onPress={handlePress}
-      >
-        <Image
-          source={{
-            uri: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
-          }}
-          style={styles.icon}
-        />
-        <Text style={styles.text}>Chat with us</Text>
-      </TouchableOpacity>
+        backgroundColor={backgroundColor}
+        isLoading={isLoading}
+      />
     </View>
   );
 };
@@ -61,38 +91,52 @@ const WhatsAppChatWidget = ({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 20,
     zIndex: 1000,
+    ...Platform.select({
+      ios: {
+        // iOS-specific shadow
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+      android: {
+        // Android-specific elevation
+        elevation: 5,
+      },
+    }),
   },
   rightPosition: {
-    right: 20,
+    right: IS_SMALL_DEVICE ? 12 : 20,
   },
   leftPosition: {
-    left: 20,
+    left: IS_SMALL_DEVICE ? 12 : 20,
   },
   button: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
+    justifyContent: "center",
+    paddingHorizontal: IS_SMALL_DEVICE ? 12 : 16,
+    paddingVertical: IS_SMALL_DEVICE ? 8 : 12,
     borderRadius: 25,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    minWidth: IS_SMALL_DEVICE ? 120 : 140,
+    height: IS_SMALL_DEVICE ? 40 : 48,
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: IS_SMALL_DEVICE ? 20 : 24,
+    height: IS_SMALL_DEVICE ? 20 : 24,
     marginRight: 8,
+    resizeMode: "contain",
   },
   text: {
     color: "#FFFFFF",
     fontWeight: "bold",
+    fontSize: IS_SMALL_DEVICE ? 13 : 15,
+    textAlign: "center",
   },
 });
 
-export default WhatsAppChatWidget;
+export default memo(WhatsAppChatWidget);
