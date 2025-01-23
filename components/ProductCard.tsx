@@ -86,118 +86,158 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.carouselContainer,
-          {
-            transform: [{ translateX: position }],
-          },
-        ]}
-        {...panResponder.current?.panHandlers}
-      >
-        <ScrollView
-          ref={scrollViewRef}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-          style={styles.scrollView}
+    <Pressable>
+      {({ pressed }) => (
+        <View
+          style={[
+            styles.container,
+            pressed && styles.pressedContainer, // Add pressed effect
+          ]}
         >
-          {product.images.map((image, index) => (
-            <Image key={index} source={{ uri: image }} style={styles.image} />
-          ))}
-        </ScrollView>
+          <Animated.View
+            style={[
+              styles.carouselContainer,
+              {
+                transform: [{ translateX: position }],
+              },
+            ]}
+            {...panResponder.current?.panHandlers}
+          >
+            <ScrollView
+              ref={scrollViewRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              style={styles.scrollView}
+            >
+              {product.images.map((image, index) => (
+                <View key={index} style={styles.imageContainer}>
+                  <Image source={{ uri: image }} style={styles.image} />
+                  <View style={styles.imageOverlay} />
+                </View>
+              ))}
+            </ScrollView>
 
-        <View style={styles.pagination}>
-          {product.images.map((_image, index) => (
-            <Pressable
-              key={index}
-              style={[
-                styles.paginationDot,
-                activeIndex === index && styles.paginationDotActive,
-              ]}
-              onPress={() => handleDotPress(index)}
-            />
-          ))}
+            <View style={styles.pagination}>
+              {product.images.map((_image, index) => (
+                <Pressable
+                  key={index}
+                  style={[
+                    styles.paginationDot,
+                    activeIndex === index && styles.paginationDotActive,
+                  ]}
+                  onPress={() => handleDotPress(index)}
+                />
+              ))}
+            </View>
+          </Animated.View>
+
+          <Link href={`/product/${product._id}`}>
+            <View style={styles.infoContainer}>
+              <Text style={styles.title}>{product.name}</Text>
+              <Text style={styles.price}>${product.price}</Text>
+              {product.description && (
+                <Text style={styles.description} numberOfLines={2}>
+                  {product.description}
+                </Text>
+              )}
+            </View>
+          </Link>
         </View>
-      </Animated.View>
-      <Link href={`/product/${product._id}`}>
-        <View style={styles.infoContainer}>
-          <Text style={styles.title}>{product.name}</Text>
-          <Text style={styles.price}>${product.price}</Text>
-          {product.description && (
-            <Text style={styles.description}>{product.description}</Text>
-          )}
-        </View>
-      </Link>
-    </View>
+      )}
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#eee",
-    borderRadius: 10,
-    padding: 10,
-    marginHorizontal: 5,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    marginHorizontal: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 5,
+    shadowRadius: 8,
     elevation: 3,
     alignItems: "center",
+    overflow: "hidden",
+  },
+  pressedContainer: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
   },
   carouselContainer: {
-    width: 150,
-    height: 170, // Increased to accommodate pagination dots
+    width: 160,
+    height: 180,
   },
   scrollView: {
     width: 150,
-    height: 150,
+    height: 160,
+  },
+  imageContainer: {
+    position: "relative",
+    width: 150,
+    height: 180,
+    borderRadius: 12,
+    overflow: "hidden",
   },
   image: {
-    width: 150,
-    height: 150,
+    width: "100%",
+    height: "100%",
     resizeMode: "cover",
-    borderRadius: 10,
+  },
+  imageOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.1)", // Subtle overlay
   },
   pagination: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 8,
-    gap: 6,
+    gap: 4,
   },
   paginationDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: "#ccc",
   },
   paginationDotActive: {
     backgroundColor: "#333",
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   infoContainer: {
-    marginTop: 10,
+    marginTop: 12,
     alignItems: "center",
   },
   title: {
     fontSize: 16,
+    fontWeight: "600",
     color: "#333",
+    textAlign: "center",
   },
   price: {
-    marginTop: 5,
+    marginTop: 6,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: "#000",
   },
   description: {
-    marginTop: 5,
+    marginTop: 6,
     fontSize: 12,
-    color: "#555",
+    color: "#666",
     textAlign: "center",
+    lineHeight: 16,
   },
 });
 
