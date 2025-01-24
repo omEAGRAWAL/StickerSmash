@@ -74,6 +74,9 @@ export const CartProvider = ({ children }) => {
         existsInCart,
       }}
     >
+
+
+      
       {children}
     </CartContext.Provider>
   );

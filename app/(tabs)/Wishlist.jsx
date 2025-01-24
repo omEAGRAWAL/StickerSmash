@@ -38,6 +38,8 @@ export default function Wishlist() {
       return fadeAnim;
     },
     [fadeAnim]
+
+
   );
 
   const renderItem = useCallback(
@@ -73,7 +75,7 @@ export default function Wishlist() {
                 >
                   <MaterialIcons name="favorite" size={20} color="#fff" />
                   <Text style={styles.removeButtonText}>
-                    Remove from Wishlist
+                    Remove from Wishl
                   </Text>
                 </TouchableOpacity>
               </View>
