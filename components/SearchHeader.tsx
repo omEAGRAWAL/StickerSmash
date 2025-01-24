@@ -184,14 +184,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 10,
     paddingVertical: 5,
+    
     backgroundColor: "#fff",
     height: 60,
   },
   titleContainer: {
-    width: 100, // Fixed width for consistent layout
+    // width: 100, // Fixed width for consistent layout
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#007AFF",
     textTransform: "uppercase",
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flex: 1,
     marginLeft: 15,
-    marginRight: 10,
+    // marginRight:,
     height: 40,
     overflow: "hidden", // Clip overflow content
     paddingRight: 8, // Add right padding for icons
