@@ -203,6 +203,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flex: 1,
     marginLeft: 15,
+    marginRight: 10,
     height: 40,
     overflow: "hidden", // Clip overflow content
     paddingRight: 8, // Add right padding for icons
